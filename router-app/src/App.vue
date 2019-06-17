@@ -12,10 +12,9 @@
 
           <ul class="nav navbar-nav">
             <li><router-link :to="{ name: 'Home' }">Home</router-link></li>
-            <li><router-link to="/add-user">Add user</router-link></li>
-            <li><router-link to="/about">About</router-link></li>
-            <li><router-link to="/coins/ethereum">Ethereum</router-link></li>
-            <li><router-link to="/coins/bitcoin">Bitcoin</router-link></li>
+            <li><router-link to="/add-user">Register</router-link></li>
+          
+            <li><router-link to="/login">Login</router-link></li>
           </ul>
         </div>
 

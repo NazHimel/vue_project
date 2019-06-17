@@ -23,6 +23,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function (request, response, next) {
+  response.header('Access-Control-Allow-Origin', '*');
+  response.header('Access-Control-Allow-Methods', '*');
+  response.header('Access-Control-Allow-Headers', '*');
+  next();
+});
+
 // app.use('/', indexRouter);
 // catch 404 and forward to error handler
 // error handler

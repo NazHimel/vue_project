@@ -7,17 +7,14 @@ const passportLocalMongoose = require('passport-local-mongoose');
 ObjectId = Schema.ObjectId;
 
 let userSchema = new Schema({
-  username: {
-    type: String,
-    unique: true
-  },
+  
   firstname: {
     type: String
   },
   lastname: {
     type: String
   },
-  email: {
+  username: {
     type: String,
     unique: true
   },
@@ -31,6 +28,10 @@ let userSchema = new Schema({
   salt:
   {
     type: String
+  },
+  is_admin:
+  {
+    type: Boolean
   }
 });
 userSchema.static.findUserById = function (userId) {

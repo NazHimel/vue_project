@@ -1,13 +1,14 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from '@/components/Home'
-import About from '@/components/About'
-import Coins from '@/components/Coins.vue'
-import User from '@/components/User.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
+import Home from '@/components/Home';
+import Register from '@/components/Register.vue';
+import Login from '@/components/Login.vue';
+import UserPage from '@/components/UserPage.vue';
+import Admin from '@/components/AdminPage.vue';
 
-Vue.use(Router)
+Vue.use(Router);
 
-export default new Router({
+let router = new Router({
   routes: [
     {
       path: '/',
@@ -15,19 +16,63 @@ export default new Router({
       component: Home
     },
     {
-      path: '/about',
-      name: 'About',
-      component: About
+      path: '/login',
+      name: 'Login',
+      component: Login,
+      meta: {
+        guest: true
+      }
     },
     {
       path: '/add-user',
-      name: 'User',
-      component: User
+      name: 'Register',
+      component: Register,
+      meta: {
+        guest: true
+      }
+    },{
+      path: '/user-page',
+      name: 'UserPage',
+      component: UserPage,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
-      path: '/coins/:id',
-      name: 'Coins',
-      component: Coins
-    }
+      path: '/admin',
+      name: 'Admin',
+      component: Admin,
+      meta: {
+        requiresAuth: true,
+        is_admin : true
+      }
+    },
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  console.log(to,from);
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    if (localStorage.getItem('jwt') == null) {
+      next({
+        path: '/login',
+        params: { nextUrl: to.fullPath }
+      })
+    } else {
+      let user = JSON.parse(localStorage.getItem('user'));
+      if(to.matched.some(record => record.meta.is_admin)) {
+        if(user.is_admin){
+          next();
+        }
+        else{
+          next({ name: 'UserPage'})
+        }
+      }else {
+        next();
+      }
+    }
+  }else {
+    next()
+  }
+});
+export default router;

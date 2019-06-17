@@ -16,12 +16,13 @@ let saveUser = function (req, res){
 
   userObject.setPassword(req.body.password).then(function (){
     userObject.save().then(saveduser => {
-      res.send(saveduser);
+      let token = TokenService.generateToken({user_id: saveduser._id.toString()});
+      res.send({token: token, user:saveduser});
   })
 
     .catch(error => {
       console.log(error);
-      res.status(500).send({ errorMessage: 'There was an error' });
+      res.status(403).send({ errorMessage: 'There was an error' });
     });
   });
 };
@@ -66,7 +67,7 @@ let loginUser = function (req, res, next) {
     console.log(error, success);
     if(success){
       let token = TokenService.generateToken({user_id: success._id.toString()});
-      res.send({token: token});
+      res.send({token: token, user:success});
     } else {
       res.status(403).send({message: 'Unauthorized'});
     }
