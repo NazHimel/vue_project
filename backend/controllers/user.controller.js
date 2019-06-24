@@ -28,7 +28,8 @@ let saveUser = function (req, res){
 };
 let getAllUsers = function (req, res){
     User.find({}).then(users =>{
-        res.render('pages/detail.ejs', {users : users, error: null});
+        //res.render('pages/detail.ejs', {users : users, error: null});
+        res.send({users:users});
     })
     .catch(error => {
         console.log(error);
