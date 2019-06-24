@@ -87,7 +87,7 @@
       clear: function () {
         this.user.firstname = '';
         this.user.lastname = '';
-        this.user.email = '';
+        this.user.username = '';
         this.user.password = '';
       }
     }

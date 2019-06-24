@@ -14,10 +14,7 @@
           <label for="lastname">Lastname</label>
           <input  class="form-control" v-model="user.lastname">
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input  class="form-control" v-model="user.email">
-        </div>
+       
         <div class="form-group">
           <label for="password">Password</label>
           <input  class="form-control" v-model="user.password">
@@ -46,7 +43,6 @@
           username: '',
           firstname: '',
           lastname: '',
-          email: '',
           password: ''
         },
         response: 'Server response will be shown here'
@@ -68,7 +64,7 @@
         this.user.username = '';
         this.user.firstname = '';
         this.user.lastname = '';
-        this.user.email = '';
+        
         this.user.password = '';
       }
     }
