@@ -5,6 +5,7 @@ import Register from '@/components/Register.vue';
 import Login from '@/components/Login.vue';
 import UserPage from '@/components/UserPage.vue';
 import Admin from '@/components/AdminPage.vue';
+import Chat from '@/components/Chat.vue';
 
 Vue.use(Router);
 
@@ -47,6 +48,12 @@ let router = new Router({
         is_admin : true
       }
     },
+    {
+      path: '/chat',
+      name: 'Chat',
+      component: Chat
+      
+    }
   ]
 });
 
