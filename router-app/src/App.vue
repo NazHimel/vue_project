@@ -13,8 +13,8 @@
           <ul class="nav navbar-nav">
             <li><router-link :to="{ name: 'Home' }">Home</router-link></li>
             <li><router-link to="/add-user">Register</router-link></li>
-          
             <li><router-link to="/login">Login</router-link></li>
+            <li><router-link to="/chat">Chat</router-link></li>
           </ul>
         </div>
 
