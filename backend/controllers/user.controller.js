@@ -75,6 +75,25 @@ let loginUser = function (req, res, next) {
   });
 };
 
+/**
+ * finds all users who are online
+ * @param req
+ * @param res
+ */
+let getUsersOnline =  function (req, res){
+  User.find({status: 'online'}).then( users =>{
+    res.send(users);
+  })
+  .catch (error => {
+    console.log(error);
+    res.render('allusers.ejs', {error : 'There was an error in getting the users'});
+  });
+};
+
+
+
+
+
 module.exports.saveUser = saveUser;
 module.exports.getAllUsers = getAllUsers;
 module.exports.addUser = addUser;
@@ -82,3 +101,4 @@ module.exports.getUser = getUser;
 module.exports.deleteUser =  deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.loadLogin = loadLogin;
+module.exports.getUsersOnline = getUsersOnline;
