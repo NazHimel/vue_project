@@ -1,63 +1,93 @@
 <template>
   <div class="hello">
-    <h1>Channel List</h1>
-    <select v-model="room">
-        <option value="common">Common</option>
-        <option value="public">Public</option>
-    </select>
-    <button class="btn btn-primary" v-on:click="join">Join</button>
-    <div> {{msgFromOther}} </div>
+   
+    <button class="bnt btn-primary" v-on:click="toggleStatus">{{buttonText}}</button>
+
+    <div>{{messageFromOtherUser}}</div>
+
     <input type="text" v-model="text"/>
-    <button class="btn btn-primary" v-on:click="send">Send</button>
+    <button class="btn btn-primary" v-on:click="sendMessage">Send</button>
+
+    <div>
+      <ul v-for="user in onlineList" :key="user._id">
+        <li>{{user.username}}</li>
+      </ul>
+    </div>
   </div>
-  
 </template>
 
 <script>
-import axios from 'axios'
-//import _ from 'underscore'
-import io from 'socket.io-client'
-
+  import io from 'socket.io-client';
+  import axios from 'axios';
   export default {
-      name:'Chat',
     data () {
-    
       return {
-        room:'',
-        socket: io('localhost:3000'),
-        text:'',
-        msgFromOther:'',
-        user: JSON.parse(localStorage.getItem('user'))
+        buttonText: 'Make yourself online',
+        online: false,
+        socket : io('localhost:3000'),
+        text: '',
+        messageFromOtherUser: '',
+        user: JSON.parse(localStorage.getItem('user')),
+        onlineList:[]
       }
     },
-    created(){
-        
-        this.socket.on('connect', function(){
-            console.log('connected');
-        });
-        this.socket.on('message', data=>{
-            if(data.from!= this.user._id){
+    created () {
+      let me = this;
+      this.socket.on('connect', function () {
+        console.log('connected');
+      });
+      this.getOnlineUsers();
 
-            this.msgFromOther = this.msgFromOther+ '<br/>'+ data.text;
-            
-            }
-            console.log(data);
-        });
+      this.socket.on('message', (data) => {
+        if(data.from !== this.user._id){
+          this.messageFromOtherUser = this.messageFromOtherUser + '<br/>' + data.text;
+        }
+      });
+
+      this.socket.on('newUserJoined',(data) => {
+        this.getOnlineUsers();
+      });
+      this.socket.on('newUserLeaved',(data) => {
+        this.getOnlineUsers();
+      });
 
     },
-  methods: {
-      join: function (e){
-          this.socket.emit('joinChannel', {roomName: this.room});
+
+    methods: {
+      toggleStatus: function (e) {
+        let me = this;
+        this.online = !this.online;
+        if(this.online) {
+          this.buttonText = 'Make yourself offline';
+          this.socket.emit('join', {
+            username: me.user.username
+          });
+        } else {
+          this.buttonText = 'Make yourself online';
+          this.socket.emit('leave', {
+            username: me.user.username
+          });
+        }
+
       },
-      send: function(e){
-          
-          this.socket.emit('message', {text: this.text, from: this.user._id, room: this.room});
+      sendMessage: function (e) {
+        this.socket.emit('message', {
+          text: this.text,
+          from: this.user._id
+        });
+      },
+
+      getOnlineUsers(){
+        axios.get('api/users/online')
+        .then( response =>{
+          this.onlineList = response.data;
+        })
+        
+
       }
-    
-  }
+    }
   }
 </script>
-
 <style scoped>
   h1, h2 {
     font-weight: normal;
