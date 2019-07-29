@@ -32,7 +32,13 @@ let userSchema = new Schema({
   is_admin:
   {
     type: Boolean
+  },
+  status:
+  {
+    type: String
   }
+
+
 });
 userSchema.static.findUserById = function (userId) {
   return this.findOne({ _id: userId }).exec();
