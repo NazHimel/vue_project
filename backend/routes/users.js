@@ -20,6 +20,7 @@ router.get('/all', function (req, res, next) {
 
 router.post('/login', userController.loginUser);
 router.get('/login', userController.loadLogin);
+router.get('/online', userController.getUsersOnline);
 
 router.get('/:userId', userController.getUser);
 router.delete('/:userId/delete', userController.deleteUser);
