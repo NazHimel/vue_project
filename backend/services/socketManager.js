@@ -1,36 +1,50 @@
-module.exports = function(server){
+/**
+ * socket manager
+ * @param server
+ * @param app
+ */
+const  User = require('../models/user.model').User;
+module.exports = function (server) {
+  // app.sockets = [];
+  // app.connections = {};
+  var io = require('socket.io').listen(server);
+  // app.io = io;
 
-    var io= require('socket.io').listen(server);
+  io.sockets.on('connection', function (socket) {
+    // app.sockets.push(socket.id);
+    console.log('New socket connected');
 
-    io.sockets.on('connection', function(socket){
-        console.log('new socket connected');
-
-
-        socket.on('disconnect', function(){
-            console.log('disconnected socket');
-        });
-
+    socket.on('join', function (data) {
+      console.log('login request with data: ', data);
+      User.findOne({username: data.username}).exec().then( user => {
+        console.log(user, data.username);
         
-        socket.on('joinChannel', function(data){
-            console.log('New user Joined:' ,JSON.stringify(data));
-            //app.connections[socket.id]= data;
-            socket.join(data.roomName);
-        });
+        user.status = 'online';
+        socket.broadcast.emit('newUserJoined',user);
+        return user.save();
+        
 
-        socket.on('message', function(msg){
-            console.log(msg);
-            io.to(msg.room).emit('message', msg);
-        });
+      });
     });
 
+    socket.on('message', function (msg) {
+      io.to(msg.room).emit('message', msg);
+    });
 
+    socket.on('leave', function (data) {
+      console.log(data);
+      User.findOne({username: data.username}).exec().then( user => {
+        console.log(user, data.username);
+        user.status = 'offline';
+        socket.broadcast.emit('newUserLeaved',user);
+        return user.save();
+        
 
+      });
+    });
+  });
 
-
-
-
-
-
-
-
-}
+  // app.get('/sockets', function (req, res) {
+  //   res.send({sockets: app.sockets, connections: app.connections});
+  // });
+};
