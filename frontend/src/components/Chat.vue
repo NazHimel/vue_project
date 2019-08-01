@@ -3,14 +3,17 @@
    
     <button class="bnt btn-primary" v-on:click="toggleStatus">{{buttonText}}</button>
 
-    <div>{{messageFromOtherUser}}</div>
+    <div v-html="messageFromOtherUser"></div>
 
     <input type="text" v-model="text"/>
     <button class="btn btn-primary" v-on:click="sendMessage">Send</button>
+    <div>
+      Chatting with : {{currentUser|| 'None'}}
+    </div>
 
     <div>
       <ul v-for="user in onlineList" :key="user._id">
-        <li>{{user.username}}</li>
+        <li><a @click="startChat(user.username)">{{user.username}}</a></li>
       </ul>
     </div>
   </div>
@@ -28,7 +31,8 @@
         text: '',
         messageFromOtherUser: '',
         user: JSON.parse(localStorage.getItem('user')),
-        onlineList:[]
+        onlineList:[],
+        currentUser:''
       }
     },
     created () {
@@ -40,7 +44,7 @@
 
       this.socket.on('message', (data) => {
         if(data.from !== this.user._id){
-          this.messageFromOtherUser = this.messageFromOtherUser + '<br/>' + data.text;
+          this.messageFromOtherUser = this.messageFromOtherUser + '<br/>'+data.from+":" + data.text;
         }
       });
 
@@ -73,7 +77,8 @@
       sendMessage: function (e) {
         this.socket.emit('message', {
           text: this.text,
-          from: this.user._id
+          from: this.user.username,
+          to:this.currentUser
         });
       },
 
@@ -83,6 +88,10 @@
           this.onlineList = response.data;
         })
         
+
+      },
+      startChat:function(username){
+        this.currentUser=username;
 
       }
     }
