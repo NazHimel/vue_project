@@ -36,6 +36,10 @@ let userSchema = new Schema({
   status:
   {
     type: String
+  },
+  socketId:
+  {
+    type: String
   }
 
 
