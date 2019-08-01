@@ -4,14 +4,15 @@
  * @param app
  */
 const  User = require('../models/user.model').User;
-module.exports = function (server) {
-  // app.sockets = [];
+const _ = require('underscore');
+module.exports = function (app,server) {
+   app.sockets = [];
   // app.connections = {};
   var io = require('socket.io').listen(server);
   // app.io = io;
 
   io.sockets.on('connection', function (socket) {
-    // app.sockets.push(socket.id);
+     app.sockets.push(socket.id);
     console.log('New socket connected');
 
     socket.on('join', function (data) {
@@ -20,15 +21,24 @@ module.exports = function (server) {
         console.log(user, data.username);
         
         user.status = 'online';
-        socket.broadcast.emit('newUserJoined',user);
+        user.socketId=socket.id;
+        _.each(app.sockets, socketId => {
+          io.to(socketId).emit("newUserJoined",user);
+        })
+        //socket.broadcast.emit('newUserJoined',user);
         return user.save();
         
 
       });
     });
 
-    socket.on('message', function (msg) {
-      io.to(msg.room).emit('message', msg);
+    socket.on('message', function (data) {
+      User.findOne({username: data.to}).exec().then( user =>{
+        if(user){
+          io.to(user.socketId).emit('message',data);
+        }
+      });
+      
     });
 
     socket.on('leave', function (data) {
@@ -36,7 +46,11 @@ module.exports = function (server) {
       User.findOne({username: data.username}).exec().then( user => {
         console.log(user, data.username);
         user.status = 'offline';
-        socket.broadcast.emit('newUserLeaved',user);
+        user.socketId='';
+        _.each(app.sockets, socketId => {
+          io.to(socketId).emit('newUserLeaved',user);
+        })
+        //socket.broadcast.emit('newUserLeaved',user);
         return user.save();
         
 
