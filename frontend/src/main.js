@@ -4,8 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-Vue.config.productionTip = false
+import bootstrapvuew from 'bootstrap-vue'
 
+import './App.scss'
+
+Vue.config.productionTip = false
+Vue.use(bootstrapvuew)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
